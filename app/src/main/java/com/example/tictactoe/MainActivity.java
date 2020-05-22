@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity{
     Button btnDownMid;
     Button btnDownRight;
 
-    Button[] gridButtons;
+    Button[][] gridButtons;
 
     TextView display;
 
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity{
         btnNew = (Button) findViewById(R.id.button10);
         display = (TextView) findViewById(R.id.textView);
 
-        gridButtons = new Button[] {btnUpLeft, btnUpMid, btnUpRight, btnCenLeft, btnCenMid, btnCenRight, btnDownLeft, btnDownMid, btnDownRight};
+        gridButtons = new Button[][] {{btnUpLeft, btnUpMid, btnUpRight}, {btnCenLeft, btnCenMid, btnCenRight}, {btnDownLeft, btnDownMid, btnDownRight}};
         btnNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,33 +57,113 @@ public class MainActivity extends AppCompatActivity{
         });
 
         for(int i = 0; i < gridButtons.length; i++){
-            gridButtons[i].setOnClickListener(new View.OnClickListener() {
+            for (int j = 0; j < gridButtons[i].length; j++)
+            gridButtons[i][j].setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v){
 
                     if(xTurn){
                         ((Button) v).setText("X");
+                        display.setText("Player O's Turn");
                     }
                     else{
                         ((Button) v).setText("O");
+                        display.setText("Player X's Turn");
                     }
 
                     v.setEnabled(false);
+
+                    if(winCheck()) {
+                        if (xTurn) {
+                            display.setText("X has won!");
+                        }
+                        else{
+                            display.setText("O has won!");
+                        }
+
+                        gameOff();
+                    }
+                    else{
+                        tieCheck();
+                    }
+
                     xTurn = !xTurn;
                 }
             });
         }
     }
 
+    public boolean winCheck(){
+        for (int i = 0; i < gridButtons.length; i++) {
+            if (!gridButtons[i][0].isEnabled() &&
+                    gridButtons[i][0].getText() == gridButtons[i][1].getText() &&
+                    gridButtons[i][1].getText() == gridButtons[i][2].getText()) {
+                return true;
+            }
+        }
+
+        for (int j = 0; j < gridButtons[0].length; j++) {
+            if (!gridButtons[0][j].isEnabled() &&
+                    gridButtons[0][j].getText() == gridButtons[1][j].getText() &&
+                    gridButtons[1][j].getText() == gridButtons[2][j].getText()) {
+                return true;
+            }
+        }
+
+        if(!gridButtons[0][0].isEnabled() &&
+                gridButtons[0][0].getText() == gridButtons[1][1].getText() &&
+                gridButtons[1][1].getText() == gridButtons[2][2].getText()){
+            return true;
+        }
+
+        if(!gridButtons[0][2].isEnabled() &&
+                gridButtons[0][2].getText() == gridButtons[1][1].getText() &&
+                gridButtons[1][1].getText() == gridButtons[2][0].getText()){
+            return true;
+        }
+
+        return false;
+
+
+    }
+
+    public void tieCheck(){
+
+        for (Button[] row: gridButtons ) {
+            for (Button b: row) {
+                if (b.isEnabled()) {
+                    return;
+                }
+            }
+        }
+
+        display.setText("Game has tied!");
+    }
+
+    public void gameOff(){
+
+        for (Button[] row: gridButtons ) {
+            for (Button b: row) {
+                if (b.isEnabled()) {
+                    b.setEnabled(false);
+                }
+            }
+        }
+    }
+
     public void freshGame(){
 
-        for(int i = 0; i < gridButtons.length; i++){
-            xTurn = true;
-            gridButtons[i].setText("");
-            gridButtons[i].setEnabled(true);
-            display.setText("It Worked!!!!");
+        for (Button[] row: gridButtons ) {
+            for (Button b: row) {
+                b.setText("");
+                b.setEnabled(true);
+            }
         }
+
+        xTurn = true;
+        display.setText("Player X's Turn");
+
     }
 
     public void onClick(View view){
