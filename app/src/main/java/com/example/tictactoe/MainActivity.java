@@ -3,6 +3,8 @@ package com.example.tictactoe;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -10,6 +12,9 @@ import android.widget.*;
 public class MainActivity extends AppCompatActivity{
 
     boolean xTurn;
+    boolean defaultTurn;
+
+    Button btnSettings;
 
     Button btnNew;
 
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         xTurn = true;
+        defaultTurn = true;
 
         btnUpLeft = (Button) findViewById(R.id.button21);
         btnUpMid = (Button) findViewById(R.id.button11);
@@ -47,6 +53,7 @@ public class MainActivity extends AppCompatActivity{
 
         btnNew = (Button) findViewById(R.id.button10);
         display = (TextView) findViewById(R.id.textView);
+        btnSettings = (Button) findViewById(R.id.btnSettings);
 
         gridButtons = new Button[][] {{btnUpLeft, btnUpMid, btnUpRight}, {btnCenLeft, btnCenMid, btnCenRight}, {btnDownLeft, btnDownMid, btnDownRight}};
         btnNew.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +99,39 @@ public class MainActivity extends AppCompatActivity{
                 }
             });
         }
+
+        btnSettings.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAbout();
+            }
+        } );
+    }
+
+    public void openAbout(){
+        String stuff = "New Game: X";
+        String things = "New Game: O";
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setPositiveButton(stuff, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                xTurn = true;
+                defaultTurn = true;
+            }
+        })
+        .setNegativeButton(things, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id){
+                xTurn = false;
+                defaultTurn = false;
+            }
+        });
+
+        alertDialogBuilder.setMessage("This application was developed by Conor O'Haleck in 2020, for CPW 252 at Clover Park Technical College");
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public boolean winCheck(){
@@ -161,8 +201,13 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        xTurn = true;
-        display.setText("Player X's Turn");
+        xTurn = defaultTurn;
+        if(defaultTurn) {
+            display.setText("Player X's Turn");
+        }
+        else{
+            display.setText("Player O's Turn");
+        }
 
     }
 
